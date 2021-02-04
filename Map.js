@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import MapView from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
+import Geocoder from 'react-native-geocoder';
 import {
   Platform,
   StyleSheet,
@@ -36,6 +37,26 @@ export default class Map extends Component {
         this.setState({
           location: {lat: location.latitude, lng: location.longitude},
         });
+        // Position Geocoding
+        var NY = {
+          lat: this.state.location.lat,
+          lng: this.state.location.lng,
+        };
+
+        Geocoder.geocodePosition(NY)
+          .then((res) => {
+            console.log(res);
+            console.log(res[0].formattedAddress);
+            // res is an Array of geocoding object (see below)
+          })
+          .catch((err) => console.log(err));
+
+        // Address Geocoding
+        Geocoder.geocodeAddress('Pakistan')
+          .then((res) => {
+            // res is an Array of geocoding object (see below)
+          })
+          .catch((err) => console.log(err));
       })
       .catch((ex) => {
         const {code, message} = ex;
@@ -76,8 +97,14 @@ export default class Map extends Component {
               // longitude: 21341241,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            }}
-          />
+            }}>
+            <Marker
+              coordinate={{
+                latitude: this.state.location.lat,
+                longitude: this.state.location.lng,
+              }}
+            />
+          </MapView>
         )}
       </View>
     );
