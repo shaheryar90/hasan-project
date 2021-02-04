@@ -8,19 +8,22 @@ import {
   View,
   Button,
   Alert,
+  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 
 import GetLocation from 'react-native-get-location';
 
 export default class Map extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       location: {lat: null, lng: null},
       loading: true,
+      address: {},
     };
   }
+
   componentDidMount() {
     this.setState({loading: true, location: null});
 
@@ -46,7 +49,10 @@ export default class Map extends Component {
         Geocoder.geocodePosition(NY)
           .then((res) => {
             console.log(res);
-            console.log(res[0].formattedAddress);
+            const address = res[0].formattedAddress;
+            console.log(address);
+            this.setState({address: address});
+            console.log('HGJHASGGDJASGDJSGDJGDSHDJASDGJSD', this.state.address);
             // res is an Array of geocoding object (see below)
           })
           .catch((err) => console.log(err));
@@ -79,6 +85,10 @@ export default class Map extends Component {
         });
       });
   }
+  currentLocation1 = () => {
+    console.warn(this.state.address);
+    this.props.navigation.navigate('Categories', {address: this.state.address});
+  };
 
   render() {
     return (
@@ -88,23 +98,33 @@ export default class Map extends Component {
             <ActivityIndicator size="large" color="#0000ff" />
           </View>
         ) : (
-          <MapView
-            style={{flex: 1}}
-            initialRegion={{
-              latitude: this.state.location.lat,
-              longitude: this.state.location.lng,
-              // latitude: 25.453453,
-              // longitude: 21341241,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}>
-            <Marker
-              coordinate={{
+          <View style={{flex: 1}}>
+            <MapView
+              style={{flex: 1}}
+              initialRegion={{
                 latitude: this.state.location.lat,
                 longitude: this.state.location.lng,
-              }}
-            />
-          </MapView>
+                // latitude: 25.453453,
+                // longitude: 21341241,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}>
+              <Marker
+                coordinate={{
+                  latitude: this.state.location.lat,
+                  longitude: this.state.location.lng,
+                }}
+              />
+            </MapView>
+
+            <View>
+              <Button
+                onPress={this.currentLocation1}
+                style={{position: 'absolute', zIndex: 1}}
+                title="Add current location"
+              />
+            </View>
+          </View>
         )}
       </View>
     );
